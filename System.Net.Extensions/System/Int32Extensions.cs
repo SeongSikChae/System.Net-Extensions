@@ -1,7 +1,6 @@
 ﻿namespace System
 {
 	using Net;
-	using Net.Sockets;
 	using System.Buffers.Binary;
 
 	/// <summary>

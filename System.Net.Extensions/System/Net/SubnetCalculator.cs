@@ -2,10 +2,20 @@
 {
 	using Text.RegularExpressions;
 
+	/// <summary>
+	/// SubnetCalculator Calculator to calculate subnet information
+	/// </summary>
 	public static class SubnetCalculator
 	{
 		private static readonly Regex CIDR_PATTERN = new Regex("(?<Network>\\S+)\\/(?<Mask>\\d+)");
 
+		/// <summary>
+		/// Calculating subnet information
+		/// </summary>
+		/// <param name="host">Host Address</param>
+		/// <param name="cidr">CIDR Signature</param>
+		/// <returns>Calculated SubnetInfo</returns>
+		/// <exception cref="InvalidOperationException">Any AddressFamily other than InetAddress or an invalid CIDR Signature</exception>
 		public static SubnetInfo Calculate(IPAddress host, string cidr)
 		{
 			IPAddressExtensions.ValidateInterNetwork(host);
@@ -20,6 +30,12 @@
 			return Calculate(host, network, netmask);
 		}
 
+		/// <summary>
+		/// Calculating subnet information
+		/// </summary>
+		/// <param name="host">Host Address</param>
+		/// <param name="netmask">Subnet Mask Address</param>
+		/// <returns></returns>
 		public static SubnetInfo Calculate(IPAddress host, IPAddress netmask)
 		{
 			IPAddress network = host.GetNetwork(netmask);
