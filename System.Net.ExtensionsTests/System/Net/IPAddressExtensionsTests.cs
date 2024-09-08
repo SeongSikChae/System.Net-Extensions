@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net;
-
-namespace System.Net.Tests
+﻿namespace System.Net.Tests
 {
 	[TestClass]
 	public class IPAddressExtensionsTests

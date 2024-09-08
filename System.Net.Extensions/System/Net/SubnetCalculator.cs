@@ -15,7 +15,7 @@
 			IPAddress network = IPAddress.Parse(match.Groups["Network"].Value);
 			IPAddressExtensions.ValidateInterNetwork(network);
 			int mask = int.Parse(match.Groups["Mask"].Value);
-			IPAddress netmask = mask.ToSubnetMask(network.AddressFamily);
+			IPAddress netmask = mask.ToSubnetMask();
 			network = network.GetNetwork(netmask);
 			return Calculate(host, network, netmask);
 		}

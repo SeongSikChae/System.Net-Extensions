@@ -1,9 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Net;
-
-namespace System.Tests
+﻿namespace System.Tests
 {
+	using Net;
+
 	[TestClass]
 	public class Int32ExtensionsTests
 	{
@@ -12,19 +10,19 @@ namespace System.Tests
 		{
 			Assert.ThrowsException<InvalidOperationException>(() =>
 			{
-				_ = (-1 * 1).ToSubnetMask(Net.Sockets.AddressFamily.InterNetwork);
+				_ = (-1 * 1).ToSubnetMask();
 			});
 
 			Assert.ThrowsException<InvalidOperationException>(() =>
 			{
-				_ = 0.ToSubnetMask(Net.Sockets.AddressFamily.InterNetworkV6);
+				_ = 0.ToSubnetMask();
 			});
 
-			Assert.AreEqual(IPAddress.Parse("255.255.255.0"), 24.ToSubnetMask(Net.Sockets.AddressFamily.InterNetwork));
-			Assert.AreEqual(IPAddress.Parse("255.255.255.128"), 25.ToSubnetMask(Net.Sockets.AddressFamily.InterNetwork));
+			Assert.AreEqual(IPAddress.Parse("255.255.255.0"), 24.ToSubnetMask());
+			Assert.AreEqual(IPAddress.Parse("255.255.255.128"), 25.ToSubnetMask());
 		}
 
-		[TestMethod()]
+		[TestMethod]
 		public void GetAddressCountTest()
 		{
 			Assert.AreEqual<uint>(126, 25.GetAddressCount());
