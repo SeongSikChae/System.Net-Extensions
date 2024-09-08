@@ -1,5 +1,8 @@
 ﻿namespace System.Net.Tests
 {
+	using Diagnostics;
+	using NetworkInformation;
+
 	[TestClass]
 	public class IPAddressExtensionsTests
 	{
@@ -157,5 +160,22 @@
 
 			Assert.AreEqual<uint>(126, IPAddress.Parse("255.255.255.128").GetAddressCount());
 		}
-	}
+
+		[TestMethod]
+		public void GetLocalHostAddressesTest()
+		{
+			Assert.ThrowsException<InvalidOperationException>(() =>
+			{
+				IPAddressExtensions.GetLocalHostAddresses(Sockets.AddressFamily.InterNetworkV6).ToList();
+			});
+
+			NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+			Dictionary<string, HashSet<IPAddress>> localAddresses = IPAddressExtensions.GetLocalHostAddresses(Sockets.AddressFamily.InterNetwork);
+			foreach (KeyValuePair<string, HashSet<IPAddress>> pair in localAddresses)
+			{
+				NetworkInterface networkInterface = interfaces.Where(item => item.Id.Equals(pair.Key)).First();
+				Trace.WriteLine($"{networkInterface.Name} : {string.Join(',', pair.Value)}");
+			}
+		}
+    }
 }

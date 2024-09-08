@@ -2,6 +2,7 @@
 {
 	using Buffers.Binary;
 	using Sockets;
+	using System.Net.NetworkInformation;
 	using Text.RegularExpressions;
 
 	/// <summary>
@@ -182,5 +183,51 @@
 		{
 			return netmask.ToCidr().GetAddressCount();
 		}
+
+		/// <summary>
+		/// Get IP address per network interface.
+		/// </summary>
+		/// <param name="addressFamily">AddressFamily.InterNetwork</param>
+		/// <returns>IP address set per interface</returns>
+		/// <exception cref="InvalidOperationException">Occurs when AddressFamily is not InterNetwork</exception>
+		public static Dictionary<string, HashSet<IPAddress>> GetLocalHostAddresses(AddressFamily addressFamily)
+		{
+			if (addressFamily != AddressFamily.InterNetwork)
+				throw new InvalidOperationException($"unsupported addressFamily '{Enum.GetName(addressFamily)}'");
+			Dictionary<string, HashSet<IPAddress>> dic = new Dictionary<string, HashSet<IPAddress>>();
+			NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (NetworkInterface networkInterface in networkInterfaces)
+            {
+				IPInterfaceProperties properties = networkInterface.GetIPProperties();
+
+				HashSet<IPAddress> gatewayAddresses = new HashSet<IPAddress>();
+				GatewayIPAddressInformationCollection gatewayIPAddressInformationCollection = properties.GatewayAddresses;
+				foreach (GatewayIPAddressInformation gatewayIPAddressInformation in gatewayIPAddressInformationCollection)
+				{
+					if (gatewayIPAddressInformation.Address.AddressFamily == addressFamily)
+						gatewayAddresses.Add(gatewayIPAddressInformation.Address);
+				}
+
+				HashSet<IPAddress> addresses = new HashSet<IPAddress>();
+				UnicastIPAddressInformationCollection unicastIPAddressInformationCollection = properties.UnicastAddresses;
+				foreach (UnicastIPAddressInformation unicastIPAddressInformation in unicastIPAddressInformationCollection)
+				{
+					if (unicastIPAddressInformation.Address.AddressFamily == addressFamily)
+					{
+						IPAddress netmask = unicastIPAddressInformation.PrefixLength.ToSubnetMask();
+						IPAddress network = unicastIPAddressInformation.Address.GetNetwork(netmask);
+						foreach (IPAddress gatewayAddress in gatewayAddresses)
+						{
+							if (unicastIPAddressInformation.Address.ValidHost(network, netmask))
+								addresses.Add(unicastIPAddressInformation.Address);
+						}
+					}
+				}
+
+				if (addresses.Count > 0)
+					dic.TryAdd(networkInterface.Id, addresses);
+            }
+			return dic;
+        }
 	}
 }
