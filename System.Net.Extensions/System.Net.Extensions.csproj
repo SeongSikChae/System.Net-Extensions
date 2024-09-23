@@ -12,6 +12,7 @@
 		<Description>.NET System.Net namespace Extensions</Description>
 		<RepositoryUrl>https://github.com/SeongSikChae/System.Net-Extensions.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/SeongSikChae/System.Net-Extensions.git</PackageProjectUrl>
 	</PropertyGroup>
 
 </Project>
